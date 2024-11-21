@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Text Summarizer</h1>
+        <p class="description">Choose an option below to summarize content:</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="radio-group">
+                <label><input type="radio" name="file_or_url" value="file" onclick="toggleFileInput()"> File</label>
+                <label><input type="radio" name="file_or_url" value="url" onclick="toggleFileInput()"> URL</label>
+                <label><input type="radio" name="file_or_url" value="text" onclick="toggleFileInput()"> Text</label>
+            </div>
+
+            <!-- Local File Input -->
+            <div class="file-input" id="file-input" style="display: none;">
+                <label for="file" class="file-label">Upload</label>
+                <div class="file-upload-container">
+                    <input type="file" id="file" name="file" accept=".md,.txt,.pdf,.docx,.html,.rtf" onchange="displayFileName()" />
+                    <div id="file-name-display" class="file-name-display">No File Selected</div>
+                </div>
+            </div>
+
+            <!-- URL Input -->
+            <div class="url-input" id="url-input" style="display: none;">
+                <input type="url" name="url" placeholder="Enter URL">
+            </div>
+
+            <!-- Text Input -->
+            <div class="text-input" id="text-input" style="display: none;">
+                <textarea name="text" rows="8" placeholder="Paste your text here"></textarea>
+            </div>
+
+            <button type="submit" class="btn">Summarize</button>
+        </form>
+
+        <!-- Display the summarized text -->
+        {% if summary_text %}
+            <div class="summary-output">
+                <h2>Summary</h2>
+                <button id="copyBtn" onclick="copyText()">Copy</button>
+                <div class="summary-text">
+                    <p>{{ summary_text }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleFileInput() {
+            const fileInput = document.getElementById('file-input');
+            const textInput = document.getElementById('text-input');
+            const urlInput = document.getElementById('url-input');
+            const radioButtons = document.getElementsByName('file_or_url');
+            
+            fileInput.style.display = 'none';
+            textInput.style.display = 'none';
+            urlInput.style.display = 'none';
+
+            radioButtons.forEach(function(button) {
+                if (button.checked) {
+                    if (button.value === 'file') {
+                        fileInput.style.display = 'block';
+                    } else if (button.value === 'url') {
+                        urlInput.style.display = 'block';
+                    } else if (button.value === 'text') {
+                        textInput.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        function displayFileName() {
+            const fileInput = document.getElementById('file');
+            const fileNameDisplay = document.getElementById('file-name-display');
+
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = "No File Selected";
+            }
+        }
+
+        function copyText() {
+            const text = document.querySelector('.summary-text p').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                alert("Summary copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
